@@ -1,0 +1,186 @@
+#Компонет в котром указаны свойства только для чтения
+PostReadonlyProperties:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: Идентификатор поста
+      example: 1
+#Это поля которы содержаться в табличке Post
+PostFillableProperties:
+  type: object
+  properties:
+    title: 
+      type: string
+      description: Название поста
+      example: Я очень интересная статья
+    preview:
+      type: string
+      description: Превью поста
+      example: "https://es-public.project.ru/domain/attachments/48/2f/image.png"
+    text: 
+      type: string
+      description: Текст статьи 
+    tags:
+      type: array
+      example: ['php','js']
+    user_id:
+      type: integer
+      description: Идентификатор пользователя
+      example: 42
+    rating:
+      nullable: true
+      type: integer
+      description: сумарный рейтинг поста
+      example: 42
+    created_at:
+      type: string 
+      format: date-time
+      example: '2020-01-01T15:47:21.000000Z'
+#Обезательные свойства при запросе
+PostRequiredRequestProperties:
+  type: object
+  required:
+    - title
+    - preview 
+    - text
+    - tags
+    - user_id
+# Сборка и компонентов ответа нашего API
+PostResponse:
+  type: object
+  properties:
+    data:
+      $ref: '#/Post'
+    meta:
+      type: object
+  required:
+      - data
+#Обезательные поля ответа API
+PostRequiredResponseProperties:
+  type: object
+  required:
+    - id
+    - title
+    - preview 
+    - text
+    - tags
+    - rating
+    - user_id
+    - created_at
+#Описание ответа с пагинцией
+PostsResponse:
+  type: object
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Post'
+    meta:
+      type: object
+      properties: 
+        pagination: 
+          $ref: '../common_schemas.yaml#/ResponseBodyPagination'
+  required:
+      - data
+#Что собой предстовляет сущность пост
+Post:
+  allOf:
+    - $ref: '#/PostReadonlyProperties'
+    - $ref: '#/PostFillableProperties'
+    - $ref: '#/PostRequiredResponseProperties'
+    - $ref: '#/PostIncludes'
+#Запрос на создание поста
+CreatePostRequest:
+  allOf:
+    - $ref: '#/PostFillableProperties'
+    - $ref: '#/PostRequiredRequestProperties'
+PatchPostRequest:
+  allOf:
+    - $ref: '#/PostFillableProperties'
+    - $ref: '#/PostRequiredRequestProperties'
+#Описание файла
+PostFile:
+  type: object
+  properties:
+    path:
+      type: string
+      description: Путь до файла относительно корня диска домена
+      example: "attachments/48/2f/image.png"
+    root_path:
+      type: string
+      description: Путь до файла относительно корня физического диска ensi
+      example: "protected/domain/attachments/48/2f/image.png"
+    url:
+      type: string
+      description: Ссылка для скачивания файла
+      example: "https://es-public.project.ru/domain/attachments/48/2f/image.png"
+#Описание фильтров для поиска
+SearchPostsFilter:
+  type: object
+  properties:
+    rating_gte:
+      type: integer
+      example: 1
+    rating_lte:
+      type: integer
+      example: 2
+    user_id:
+      type: integer
+      example: 3
+    tags:
+      type: array
+      example: ['php','js']
+    text_like:
+      type: string
+      example: html
+    title_like:
+      type: string
+      example: google
+#Доп данные которые можно включить в запрос
+PostIncludes:
+  type: object
+  properties: 
+    voices:
+      type: array
+      items:
+        $ref: './posts_voices.yaml#/Voices'
+#Описание сортировки
+RequestPostSort:
+  type: array
+  items:
+    type: string
+    example: "created_at"
+#описание подлючаемых сущностей
+RequestPostInclude:
+  type: array
+  items:
+    type: string
+    example: 'voices'
+#Описание запроса на поиск
+SearchPostsRequest:
+  type: object
+  properties: 
+    sort:
+      $ref: '#/RequestPostSort'
+    filter: 
+      $ref: '#/SearchPostsFilter'
+    include:
+      $ref: '#/RequestPostInclude'
+    pagination:
+      $ref: '../common_schemas.yaml#/RequestBodyPagination'
+#Описание результата поиска
+SearchPostsResponse:
+  type: object
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Post'
+    meta:
+      type: object
+      properties: 
+        pagination: 
+          $ref: '../common_schemas.yaml#/ResponseBodyPagination'
+  required:
+      - data

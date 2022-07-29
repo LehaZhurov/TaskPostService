@@ -1,0 +1,112 @@
+VoiceReadonlyProperties:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: Идентификатор голоса
+      example: 1
+#Это поля которы содержаться в табличке Voices
+VoiceFillableProperties:
+  type: object
+  properties:
+    voices: 
+      type: integer
+      example: 1
+    post_id: 
+      type: integer
+      example: 2
+    user_id: 
+      type: integer
+      example: 1
+    created_at:
+      type: string 
+      format: date-time
+      example: '2020-01-01T15:47:21.000000Z'
+# Сборка и компонентов ответа нашего API
+VoiceResponse:
+  type: object
+  properties:
+    data:
+      $ref: '#/Voices'
+    meta:
+      type: object
+  required:
+      - data
+VoicesResponse:
+  type: object
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Voices'
+    meta:
+      type: object
+      properties: 
+        pagination: 
+          $ref: '../common_schemas.yaml#/ResponseBodyPagination'
+  required:
+      - data
+#Обезательные поля ответа API
+VoiceRequiredResponseProperties:
+  type: object
+  required:
+    - id
+    - voices  
+    - post_id
+    - user_id
+    - created_at
+
+VoiceRequiredRequestProperties:
+  type: object
+  required:
+    - voices
+    - user_id
+#Что собой предстовляет сущность голос
+Voices:
+  allOf:
+    - $ref: '#/VoiceReadonlyProperties'
+    - $ref: '#/VoiceFillableProperties'
+    - $ref: '#/VoiceRequiredResponseProperties'
+#описнаие запроса на создание голоса
+CreateVoiceRequest:
+  allOf:
+    - $ref: '#/VoiceFillableProperties'
+    - $ref: '#/VoiceRequiredRequestProperties'
+PatchVoiceRequest:
+  allOf:
+    - $ref: '#/VoiceFillableProperties'
+    - $ref: '#/VoiceRequiredRequestProperties'
+#Описание фильтров для поиска
+SearchVoicesFilter:
+  type: object
+  properties:
+    user_id:
+      type: integer
+      example: 10
+    post_id:
+      type: integer
+      example: 1
+#Описание запроса на поиск
+SearchVoicesRequest:
+  type: object
+  properties: 
+    filter: 
+      $ref: '#/SearchVoicesFilter'
+    pagination:
+      $ref: '../common_schemas.yaml#/RequestBodyPagination'
+#Описание результата поиска
+SearchVoicesResponse:
+  type: object
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Voices'
+    meta:
+      type: object
+      properties: 
+        pagination: 
+          $ref: '../common_schemas.yaml#/ResponseBodyPagination'
+  required:
+      - data
+      - meta

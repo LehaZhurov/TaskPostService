@@ -1,0 +1,321 @@
+openapi: 3.0.3
+info:
+  title: API ServicesPost
+  contact:
+    name: API Support
+    url: https://ensi.tech/contacts
+    email: mail@greensight.ru
+  version: 1.0.0
+  description: APi Post 
+servers:
+  - url: /api/v1
+tags:
+  - name: posts
+    description: Тэг для ресурса posts
+paths:
+  /posts:all:
+    post:
+      tags: 
+        - posts
+      operationId: getPosts
+      x-lg-handler: 'App\Http\ApiV1\Controllers\PostController@index'
+      x-lg-route-name: 'getPosts'
+      x-lg-skip-request-generation: true
+      summary: Получени массив постов
+      description: Данный метод позволит получить массив постов с пагинацией
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts.yaml#/PostsResponse'
+        "500":
+          $ref: '#/components/responses/ServerError'
+  /posts:
+    post:
+      tags: 
+        - posts
+      operationId: createPost
+      x-lg-handler: 'App\Http\ApiV1\Controllers\PostController@store'
+      x-lg-route-name: 'createPost'
+      summary: Создание поста
+      description: Данный метод позволит создать пост
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts.yaml#/PostResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError'
+  /posts/{id}:
+    get:
+      tags: 
+        - posts
+      operationId: getPost
+      x-lg-handler: 'App\Http\ApiV1\Controllers\PostController@show'
+      x-lg-route-name: 'getPost'
+      summary: Получение одного поста
+      description: Данный метод позволить получить один пост по его id
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/QueryInclude'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts.yaml#/PostResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/ServerError'
+    patch:
+      tags: 
+        - posts
+      operationId: patchPost
+      x-lg-handler: 'App\Http\ApiV1\Controllers\PostController@update'
+      x-lg-route-name: 'patchPost'
+      summary: Редактирование поста
+      description: Данный метод позволит отредактировать пост
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts.yaml#/PostResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: 
+        - posts
+      operationId: deletePost
+      x-lg-handler: 'App\Http\ApiV1\Controllers\PostController@destroy'
+      x-lg-route-name: 'deletePost'
+      summary: Удаление одного поста
+      description: Данный метод позволить удалить один пост по его id
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyDataResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/ServerError'
+  /posts:search:
+    post:
+      tags:
+        - posts
+      operationId: searchPosts
+      x-lg-handler: 'App\Http\ApiV1\Controllers\PostController@search'
+      x-lg-route-name: 'searchPosts'
+      summary: Поиск постов
+      description: Метод позволяет проводит поиск по постам
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './posts/posts.yaml#/SearchPostsRequest'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts.yaml#/SearchPostsResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError' 
+  /posts/{id}/voices:
+    get:
+      tags: 
+        - posts
+      operationId: getPostVoices
+      x-lg-handler: 'App\Http\ApiV1\Controllers\VoicesController@index'
+      x-lg-route-name: 'getPostVoices'
+      summary: Получение получение оценок поста
+      description: Метод позволяет получить абсолютно все оценки поста
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts_voices.yaml#/VoicesResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags: 
+        - posts
+      operationId: createPostVoice
+      x-lg-handler: 'App\Http\ApiV1\Controllers\VoicesController@store'
+      x-lg-route-name: 'createPostVoice'
+      summary: Создание голоса поста
+      description: Данный метод позволит проголосовать за пост
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts_voices.yaml#/VoiceResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: 
+        - posts
+      operationId: deletePostVoices
+      x-lg-handler: 'App\Http\ApiV1\Controllers\VoicesController@destroyAll'
+      x-lg-route-name: 'deletePostVoice'
+      summary: Удаление оценок поста
+      description: Метод позволяет удалить абсолютно все оценки поста
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/EmptyDataResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/ServerError'
+  /posts/{id}/voices/{voiceId}:
+    patch:
+      tags: 
+        - posts
+      operationId: patchPostVoice
+      x-lg-handler: 'App\Http\ApiV1\Controllers\VoicesController@update'
+      x-lg-route-name: 'patchPostVoice'
+      summary: Редактирование голоса
+      description: Данный метод позволит отредактировать голос
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/VoiceId'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts_voices.yaml#/VoiceResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: 
+        - posts
+      operationId: deleteOneVoicePost
+      x-lg-handler: 'App\Http\ApiV1\Controllers\VoicesController@destroy'
+      x-lg-route-name: 'deletePostVoice'
+      summary: Удаление одного голоса 
+      description: Данный метод позволить удалить один голос по его id
+      parameters:
+          - $ref: '#/components/parameters/PathId'
+          - $ref: '#/components/parameters/VoiceId'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyDataResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/ServerError'
+  /posts/voices:search:
+    post:
+      tags:
+        - posts
+      operationId: searchPostVoices
+      x-lg-handler: 'App\Http\ApiV1\Controllers\VoicesController@search'
+      x-lg-route-name: 'searchPostVoices'
+      summary: Поиск голосов поста
+      description: Метод позволяет проводит поиск голосов
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './posts/posts_voices.yaml#/SearchVoicesRequest'
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: './posts/posts_voices.yaml#/SearchVoicesResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/ServerError' 
+
+components:
+  parameters:
+    QueryInclude:
+      $ref: './common_parameters.yaml#/QueryInclude'
+    PathId:
+      $ref: './common_parameters.yaml#/PathId'
+    VoiceId:
+      $ref: './common_parameters.yaml#/VoiceId'
+  schemas:
+    EmptyDataResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+        meta:
+          type: object
+      required:
+          - data
+    PaginationTypeEnum:
+      $ref: './common_schemas.yaml#/PaginationTypeEnum'
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: './errors.yaml#/ErrorResponse'
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: './errors.yaml#/ErrorResponse'
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: './errors.yaml#/ErrorResponse'

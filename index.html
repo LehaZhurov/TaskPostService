@@ -1,0 +1,25 @@
+
+
+
+<form id = 'search'>
+    <input type="file" name="file" id="file">
+    <button type="button" id = 'but_send_file'>
+        Отправить
+    </button>
+    <script>
+        but = document.getElementById('but_send_file');
+        text = null;
+        but.onclick = function(){
+            let file = document.getElementById('file').files[0];
+            let reader = new FileReader();
+            reader.addEventListener('loadend', function() {
+                point(this.result)
+            });
+            reader.readAsText(file);
+            point = (text) => {
+                text = text;
+            }
+            console.log(text);
+        }
+    </script>
+</form>
